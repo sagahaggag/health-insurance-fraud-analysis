@@ -1,0 +1,49 @@
+/* =====================================================================
+   02_verify_import.sql
+   Purpose : Check that the four CSV imports loaded correctly.
+   Run     : After importing all four files. Compare with the expected values.
+   ===================================================================== */
+
+USE FraudAnalysis;
+GO
+
+/* 1. Row counts. Expected: 138556 / 40474 / 517737 / 5410 */
+SELECT 'beneficiary'    AS table_name, COUNT(*) AS row_count FROM dbo.beneficiary
+UNION ALL SELECT 'inpatient',      COUNT(*) FROM dbo.inpatient
+UNION ALL SELECT 'outpatient',     COUNT(*) FROM dbo.outpatient
+UNION ALL SELECT 'provider_labels',COUNT(*) FROM dbo.provider_labels;
+
+/* 2. Fraud label split. Expected: No 4904, Yes 506 */
+SELECT PotentialFraud, COUNT(*) AS providers
+FROM dbo.provider_labels
+GROUP BY PotentialFraud;
+
+/* 3. Missing values must be NULL, not text 'NA' or empty text. Expected: both 0 */
+SELECT
+    (SELECT COUNT(*) FROM dbo.inpatient  WHERE OperatingPhysician IN ('NA','')) AS ip_na_text,
+    (SELECT COUNT(*) FROM dbo.outpatient WHERE OperatingPhysician IN ('NA','')) AS op_na_text;
+
+/* 4. NULLs should exist where expected.
+      Expected: patients with no date of death = 137135 */
+SELECT COUNT(*) AS alive_patients FROM dbo.beneficiary WHERE DOD IS NULL;
+
+/* 5. Date range. Expected: inpatient 2008-11-27 to 2009-12-31 */
+SELECT MIN(ClaimStartDt) AS first_claim, MAX(ClaimEndDt) AS last_claim FROM dbo.inpatient;
+
+/* 6. Money check. Expected: inpatient total 408297020, outpatient total 148246120 */
+SELECT SUM(InscClaimAmtReimbursed) AS inpatient_total   FROM dbo.inpatient;
+SELECT SUM(InscClaimAmtReimbursed) AS outpatient_total  FROM dbo.outpatient;
+
+/* 7. Orphan check. Expected: 0 rows in each */
+SELECT COUNT(*) AS ip_orphan_patients  FROM dbo.inpatient  i LEFT JOIN dbo.beneficiary b ON b.BeneID = i.BeneID WHERE b.BeneID IS NULL;
+SELECT COUNT(*) AS op_orphan_patients  FROM dbo.outpatient o LEFT JOIN dbo.beneficiary b ON b.BeneID = o.BeneID WHERE b.BeneID IS NULL;
+SELECT COUNT(*) AS ip_orphan_providers FROM dbo.inpatient  i LEFT JOIN dbo.provider_labels p ON p.Provider = i.Provider WHERE p.Provider IS NULL;
+SELECT COUNT(*) AS op_orphan_providers FROM dbo.outpatient o LEFT JOIN dbo.provider_labels p ON p.Provider = o.Provider WHERE p.Provider IS NULL;
+GO
+
+/* 8. Add foreign keys. */
+ALTER TABLE dbo.inpatient  ADD CONSTRAINT FK_inpatient_beneficiary  FOREIGN KEY (BeneID)   REFERENCES dbo.beneficiary(BeneID);
+ALTER TABLE dbo.outpatient ADD CONSTRAINT FK_outpatient_beneficiary FOREIGN KEY (BeneID)   REFERENCES dbo.beneficiary(BeneID);
+ALTER TABLE dbo.inpatient  ADD CONSTRAINT FK_inpatient_provider     FOREIGN KEY (Provider) REFERENCES dbo.provider_labels(Provider);
+ALTER TABLE dbo.outpatient ADD CONSTRAINT FK_outpatient_provider    FOREIGN KEY (Provider) REFERENCES dbo.provider_labels(Provider);
+GO
