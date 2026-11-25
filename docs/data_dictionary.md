@@ -2,14 +2,14 @@
 
 Dictionary for the Healthcare Provider Fraud Detection dataset (Kaggle, Medicare-style claims). It describes the four source files, the keys that link them, and every cleaning step applied.
 
-Last updated: Nov 25, 2026
+Last updated: 2026-11-25
 
 ## Cleaning status
 
 | File | Rows x columns (raw) | Status | Cleaned table name |
 | --- | --- | --- | --- |
 | Beneficiary | 138,556 x 25 | Cleaned (complete) | `01_beneficiary_data_final` |
-| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data_final` |
+| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data` |
 | Outpatient | 517,737 x 27 | Cleaned (complete) | `03_outpatient_data_final` |
 | Provider labels | 5,410 x 2 | Cleaned (complete) | `04_provider_labels_final` |
 
@@ -58,7 +58,7 @@ One row per patient (138,556 rows). Cleaned table: `01_beneficiary_data_final`.
 | `NoOfMonths_PartACov` | Months of Part A (hospital) coverage in the year | 0-12 | Whole number |
 | `NoOfMonths_PartBCov` | Months of Part B (medical) coverage in the year | 0-12 | Whole number |
 | `ChronicCond_Alzheimer` | Alzheimer's flag | 1, 2 | Yes, No |
-| `ChronicCond_Heartfailure` | Heart failure flag | 1, 2 | Yes, No |
+| `ChronicCond_HeartFailure` | Heart failure flag | 1, 2 | Yes, No |
 | `ChronicCond_KidneyDisease` | Kidney disease flag | 1, 2 | Yes, No |
 | `ChronicCond_Cancer` | Cancer flag | 1, 2 | Yes, No |
 | `ChronicCond_ObstrPulmonary` | Obstructive pulmonary disease flag | 1, 2 | Yes, No |
@@ -66,8 +66,8 @@ One row per patient (138,556 rows). Cleaned table: `01_beneficiary_data_final`.
 | `ChronicCond_Diabetes` | Diabetes flag | 1, 2 | Yes, No |
 | `ChronicCond_IschemicHeart` | Ischemic heart disease flag | 1, 2 | Yes, No |
 | `ChronicCond_Osteoporosis` | Osteoporosis flag (renamed; the source spelled it Osteoporasis) | 1, 2 | Yes, No |
-| `ChronicCond_rheumatoidarthritis` | Rheumatoid arthritis flag | 1, 2 | Yes, No |
-| `ChronicCond_stroke` | Stroke flag | 1, 2 | Yes, No |
+| `ChronicCond_RheumatoidArthritis` | Rheumatoid arthritis flag | 1, 2 | Yes, No |
+| `ChronicCond_Stroke` | Stroke flag | 1, 2 | Yes, No |
 | `IPAnnualReimbursementAmt` | Inpatient amount reimbursed in the year (USD) | Number, min -8,000 | Currency |
 | `IPAnnualDeductibleAmt` | Inpatient deductible paid in the year (USD) | Number | Currency |
 | `OPAnnualReimbursementAmt` | Outpatient amount reimbursed in the year (USD) | Number, min -70 | Currency |
