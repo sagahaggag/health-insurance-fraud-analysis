@@ -3,7 +3,7 @@
    Purpose : Load the four cleaned CSV files into the tables created by
              01_create_tables.sql.
    Before  : Put the four CSV files in C:\data_import\ (or change the
-             folder in each line below).
+             folder in each line below to match the path where you saved your CSV files).
    Run     : Run the four blocks ONE AT A TIME, in this order:
              provider_labels, beneficiary, inpatient, outpatient.
    Note    : BULK INSERT matches columns by POSITION, not by name.
