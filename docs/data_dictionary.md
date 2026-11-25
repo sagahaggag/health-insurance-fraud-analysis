@@ -2,16 +2,16 @@
 
 Dictionary for the Healthcare Provider Fraud Detection dataset (Kaggle, Medicare-style claims). It describes the four source files, the keys that link them, and every cleaning step applied.
 
-Last updated: 2026-11-25
+Last updated: Nov 25, 2026
 
 ## Cleaning status
 
 | File | Rows x columns (raw) | Status | Cleaned table name |
 | --- | --- | --- | --- |
 | Beneficiary | 138,556 x 25 | Cleaned (complete) | `01_beneficiary_data_final` |
-| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data` |
+| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data_final` |
 | Outpatient | 517,737 x 27 | Cleaned (complete) | `03_outpatient_data_final` |
-| Provider labels | 5,410 x 2 | Not started | - |
+| Provider labels | 5,410 x 2 | Cleaned (complete) | `04_provider_labels_final` |
 
 ## Keys and relationships
 
@@ -170,9 +170,19 @@ One row per provider (5,410 rows); this is the fraud label used in the analysis.
 | `Provider` | Provider identifier (unique, primary key) | Text ID |
 | `PotentialFraud` | Flag for potentially fraudulent provider | No (4,904), Yes (506) |
 
-### Cleaning steps performed
+Checks on the raw file: 5,410 unique providers, no blanks or `NA` values, no extra spaces. About 9.4% of providers are flagged.
 
-None reported yet.
+### Cleaning steps performed (Excel Power Query)
+
+| # | Column(s) | Step | Result |
+| --- | --- | --- | --- |
+| 1 | All | Promoted the first row to headers | Headers are `Provider` and `PotentialFraud` |
+| 2 | `Provider`, `PotentialFraud` | Set type to Text | Done |
+| 3 | Both columns | Checked for blanks and nulls | None found |
+| 4 | `Provider` | Checked for duplicates | None found |
+| 5 | `PotentialFraud` | Checked the distinct values | Only Yes and No |
+| 6 | All | Checked for extra spaces | None found |
+| 7 | All | Saved the cleaned table as `04_provider_labels_final` | Table loaded |
 
 ## Data-quality flags
 
