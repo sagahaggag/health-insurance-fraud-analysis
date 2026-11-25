@@ -9,7 +9,7 @@ Last updated: 2026-11-25
 | File | Rows x columns (raw) | Status | Cleaned table name |
 | --- | --- | --- | --- |
 | Beneficiary | 138,556 x 25 | Cleaned (complete) | `01_beneficiary_data_final` |
-| Inpatient | 40,474 x 30 | Cleaned | `02_inpatient_data` |
+| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data_final` |
 | Outpatient | 517,737 x 27 | Not started | - |
 | Provider labels | 5,410 x 2 | Not started | - |
 
