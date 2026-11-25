@@ -2,14 +2,14 @@
 
 Dictionary for the Healthcare Provider Fraud Detection dataset (Kaggle, Medicare-style claims). It describes the four source files, the keys that link them, and every cleaning step applied.
 
-Last updated: 25 Nov 2026
+Last updated: 2026-11-25
 
 ## Cleaning status
 
 | File | Rows x columns (raw) | Status | Cleaned table name |
 | --- | --- | --- | --- |
 | Beneficiary | 138,556 x 25 | Cleaned (complete) | `01_beneficiary_data_final` |
-| Inpatient | 40,474 x 30 | Not started | - |
+| Inpatient | 40,474 x 30 | Cleaned | `02_inpatient_data` |
 | Outpatient | 517,737 x 27 | Not started | - |
 | Provider labels | 5,410 x 2 | Not started | - |
 
@@ -58,7 +58,7 @@ One row per patient (138,556 rows). Cleaned table: `01_beneficiary_data_final`.
 | `NoOfMonths_PartACov` | Months of Part A (hospital) coverage in the year | 0-12 | Whole number |
 | `NoOfMonths_PartBCov` | Months of Part B (medical) coverage in the year | 0-12 | Whole number |
 | `ChronicCond_Alzheimer` | Alzheimer's flag | 1, 2 | Yes, No |
-| `ChronicCond_HeartFailure` | Heart failure flag (renamed; the source spelled it heartfailure) | 1, 2 | Yes, No |
+| `ChronicCond_Heartfailure` | Heart failure flag | 1, 2 | Yes, No |
 | `ChronicCond_KidneyDisease` | Kidney disease flag | 1, 2 | Yes, No |
 | `ChronicCond_Cancer` | Cancer flag | 1, 2 | Yes, No |
 | `ChronicCond_ObstrPulmonary` | Obstructive pulmonary disease flag | 1, 2 | Yes, No |
@@ -66,8 +66,8 @@ One row per patient (138,556 rows). Cleaned table: `01_beneficiary_data_final`.
 | `ChronicCond_Diabetes` | Diabetes flag | 1, 2 | Yes, No |
 | `ChronicCond_IschemicHeart` | Ischemic heart disease flag | 1, 2 | Yes, No |
 | `ChronicCond_Osteoporosis` | Osteoporosis flag (renamed; the source spelled it Osteoporasis) | 1, 2 | Yes, No |
-| `ChronicCond_RheumatoidArthritis` | Rheumatoid arthritis flag (renamed; the source spelled it rheumatoidarthritis)| 1, 2 | Yes, No |
-| `ChronicCond_Stroke` | Stroke flag (renamed; the source spelled it stroke) | 1, 2 | Yes, No |
+| `ChronicCond_rheumatoidarthritis` | Rheumatoid arthritis flag | 1, 2 | Yes, No |
+| `ChronicCond_stroke` | Stroke flag | 1, 2 | Yes, No |
 | `IPAnnualReimbursementAmt` | Inpatient amount reimbursed in the year (USD) | Number, min -8,000 | Currency |
 | `IPAnnualDeductibleAmt` | Inpatient deductible paid in the year (USD) | Number | Currency |
 | `OPAnnualReimbursementAmt` | Outpatient amount reimbursed in the year (USD) | Number, min -70 | Currency |
@@ -116,11 +116,28 @@ One row per inpatient claim (40,474 rows, 30 columns). Missing values are stored
 | `DeductibleAmtPaid` | Deductible paid by the patient (USD) |
 | `DiagnosisGroupCode` | Diagnosis-related group (DRG) code |
 | `ClmDiagnosisCode_1` to `_10` | Up to 10 diagnosis codes |
-| `ClmProcedureCode_1` to `_6` | Up to 6 procedure codes |
+| `ClmProcedureCode_1` to `_5` | Up to 5 procedure codes (`ClmProcedureCode_6` was empty in every row and was dropped) |
 
-### Cleaning steps performed
+Checks on the raw file: no duplicate rows in the `ClaimID` column, no negative amounts, no end-before-start or discharge-before-admission dates, and every `BeneID` and `Provider` exists in the beneficiary and provider files. Claim dates run from 2008-11-27 to 2009-12-31. 1,085 claims have a reimbursement of 0.
 
-None reported yet.
+### Cleaning steps performed (Excel Power Query)
+
+| # | Column(s) | Step | Result |
+| --- | --- | --- | --- |
+| 1 | `BeneID` | Sorted ascending | Rows ordered by patient ID |
+| 2 | Amount columns | Changed type from number to Currency | Currency format |
+| 3 | Diagnosis and procedure code columns | Changed type from any to Text | Leading zeros and V/E letters kept |
+| 4 | All text `NA` values | Replaced with null | Missing values are real nulls |
+| 5 | `ClaimStartDt`, `ClaimEndDt`, `AdmissionDt`, `DischargeDt` | Set type to Date | Done |
+| 6 | `ClaimID` | Checked for duplicates | None found |
+| 7 | Reimbursement and deductible amounts | Checked for negatives | None found; nothing changed |
+| 8 | ID columns (`BeneID`, `ClaimID`, `Provider`, physicians) | Set type to Text | Done |
+| 9 | Text columns | Checked for extra spaces | None found |
+| 10 | `ClmProcedureCode_6` | Deleted the column (empty in all 40,474 rows) | 29 columns remain |
+| 11 | `DeductibleAmtPaid` | Converted the 899 null values to 0 (assumption: `NA` means no deductible) | No nulls; 0 = no deductible |
+| 12 | `InscClaimAmtReimbursed` | Kept the 1,085 claims with a reimbursement of 0 | Zero-paid claims kept |
+| 13 | Physician columns | Left the nulls as they are (most claims have no operating or other physician) | Nulls kept |
+| 14 | Amount columns | Checked that `NA` was replaced before the Currency conversion; no error cells | Done |
 
 ## Outpatient file
 
