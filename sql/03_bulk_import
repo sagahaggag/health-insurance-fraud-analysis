@@ -1,0 +1,44 @@
+/* =====================================================================
+   03_bulk_import.sql
+   Purpose : Load the four cleaned CSV files into the tables created by
+             01_create_tables.sql.
+   Before  : Put the four CSV files in C:\data_import\ (or change the
+             folder in each line below).
+   Run     : Run the four blocks ONE AT A TIME, in this order:
+             provider_labels, beneficiary, inpatient, outpatient.
+   Note    : BULK INSERT matches columns by POSITION, not by name.
+             The column order in each CSV must match the table.
+   ===================================================================== */
+
+USE FraudAnalysis;
+GO
+
+/* 1. provider_labels */
+BULK INSERT dbo.provider_labels
+FROM 'C:\data_import\provider_labels.csv'
+WITH (
+    FORMAT = 'CSV',
+    FIRSTROW = 2,              -- skip the header row
+    CODEPAGE = '65001',        -- UTF-8
+    KEEPNULLS,                 -- empty cells become NULL
+    TABLOCK
+);
+GO
+
+/* 2. beneficiary */
+BULK INSERT dbo.beneficiary
+FROM 'C:\data_import\beneficiary.csv'
+WITH (FORMAT = 'CSV', FIRSTROW = 2, CODEPAGE = '65001', KEEPNULLS, TABLOCK);
+GO
+
+/* 3. inpatient */
+BULK INSERT dbo.inpatient
+FROM 'C:\data_import\inpatient.csv'
+WITH (FORMAT = 'CSV', FIRSTROW = 2, CODEPAGE = '65001', KEEPNULLS, TABLOCK);
+GO
+
+/* 4. outpatient (largest file, can take a few minutes) */
+BULK INSERT dbo.outpatient
+FROM 'C:\data_import\outpatient.csv'
+WITH (FORMAT = 'CSV', FIRSTROW = 2, CODEPAGE = '65001', KEEPNULLS, TABLOCK);
+GO
