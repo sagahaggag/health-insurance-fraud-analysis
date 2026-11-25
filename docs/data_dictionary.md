@@ -9,8 +9,8 @@ Last updated: 2026-11-25
 | File | Rows x columns (raw) | Status | Cleaned table name |
 | --- | --- | --- | --- |
 | Beneficiary | 138,556 x 25 | Cleaned (complete) | `01_beneficiary_data_final` |
-| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data_final` |
-| Outpatient | 517,737 x 27 | Not started | - |
+| Inpatient | 40,474 x 30 | Cleaned (complete) | `02_inpatient_data` |
+| Outpatient | 517,737 x 27 | Cleaned (complete) | `03_outpatient_data_final` |
 | Provider labels | 5,410 x 2 | Not started | - |
 
 ## Keys and relationships
@@ -118,7 +118,7 @@ One row per inpatient claim (40,474 rows, 30 columns). Missing values are stored
 | `ClmDiagnosisCode_1` to `_10` | Up to 10 diagnosis codes |
 | `ClmProcedureCode_1` to `_5` | Up to 5 procedure codes (`ClmProcedureCode_6` was empty in every row and was dropped) |
 
-Checks on the raw file: no duplicate rows in the `ClaimID` column, no negative amounts, no end-before-start or discharge-before-admission dates, and every `BeneID` and `Provider` exists in the beneficiary and provider files. Claim dates run from 2008-11-27 to 2009-12-31. 1,085 claims have a reimbursement of 0.
+Checks on the raw file: no duplicate rows or `ClaimID` values, no negative amounts, no end-before-start or discharge-before-admission dates, and every `BeneID` and `Provider` exists in the beneficiary and provider files. Claim dates run from 2008-11-27 to 2009-12-31. 1,085 claims have a reimbursement of 0.
 
 ### Cleaning steps performed (Excel Power Query)
 
@@ -141,11 +141,25 @@ Checks on the raw file: no duplicate rows in the `ClaimID` column, no negative a
 
 ## Outpatient file
 
-One row per outpatient claim (517,737 rows, 27 columns). Same columns as Inpatient, minus `AdmissionDt`, `DischargeDt` and `DiagnosisGroupCode`, because there is no hospital stay.
+One row per outpatient claim (517,737 rows, 27 columns). Same columns as Inpatient, minus `AdmissionDt`, `DischargeDt` and `DiagnosisGroupCode`, because there is no hospital stay. `ClmProcedureCode_5` and `ClmProcedureCode_6` were dropped because they were empty in every row, so 25 columns remain.
 
-### Cleaning steps performed
+Checks on the raw file: no duplicate rows or `ClaimID` values, no negative amounts, no end-before-start dates, no extra spaces, and every `BeneID` and `Provider` exists in the beneficiary and provider files. Claim dates run from 2008-12-12 to 2009-12-31. 19,568 claims have a reimbursement of 0 and the largest is 102,500. `ClmAdmitDiagnosisCode` is already empty (not `NA`) in 412,312 rows.
 
-None reported yet.
+### Cleaning steps performed (Excel Power Query)
+
+| # | Column(s) | Step | Result |
+| --- | --- | --- | --- |
+| 1 | `BeneID` | Sorted ascending | Rows ordered by patient ID |
+| 2 | `ClaimStartDt`, `ClaimEndDt` | Checked that both are in Date format | Done |
+| 3 | All columns | Replaced the text `NA` with null | Missing values are real nulls |
+| 4 | All columns except dates, IDs, `Provider` and amounts | Changed type to Text | Codes kept as text |
+| 5 | Amount columns | Changed to Currency after replacing the `NA` values | Currency format |
+| 6 | `ClmProcedureCode_5`, `ClmProcedureCode_6` | Deleted both columns (empty in all 517,737 rows) | 25 columns remain |
+| 7 | Reimbursement and deductible amounts | Checked for negatives | None found; nothing changed |
+| 8 | `ClmAdmitDiagnosisCode` | Already empty in the raw file (412,312 rows); converted to null like the other missing values | Consistent nulls |
+| 9 | `BeneID`, `ClaimID`, `Provider` | Confirmed the type is Text | Done |
+| 10 | `InscClaimAmtReimbursed` | Kept the 19,568 claims with a reimbursement of 0 and the largest claims as they are | Rows kept |
+| 11 | All | Saved the cleaned table as `03_outpatient_data_final` | Table loaded |
 
 ## Provider labels file
 
