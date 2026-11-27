@@ -9,11 +9,11 @@
 
 - [x] Dataset selected and data dictionary written
 - [x] Beneficiary file cleaned (Excel Power Query)
-- [ ] Inpatient file cleaned
-- [ ] Outpatient file cleaned
-- [ ] Provider labels cleaned
-- [ ] SQL database built and data quality checks run
-- [ ] SQL analysis queries
+- [x] Inpatient file cleaned
+- [x] Outpatient file cleaned
+- [x] Provider labels cleaned
+- [x] SQL database built and data quality checks run
+- [x] SQL analysis queries
 - [ ] Excel analysis workbook and dashboard
 - [ ] Business questions answered
 
