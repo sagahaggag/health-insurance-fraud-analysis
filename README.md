@@ -134,5 +134,5 @@ Data cleaning with Power Query, data dictionary and documentation, relational da
 
 ## Author
 
-**[Your name]**, pharmacy graduate moving into data analytics.
-[LinkedIn](https://www.linkedin.com/in/your-profile) | [GitHub](https://github.com/your-username)
+**[Saga Haggag]**, pharmacy graduate moving into data analytics.
+[LinkedIn](www.linkedin.com/in/saga-mohamed-970111144) | [GitHub](https://github.com/sagahaggag)
