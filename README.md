@@ -15,7 +15,7 @@
 - [x] SQL analysis queries
 - [x] Excel dashboard
 - [x] Business questions answered
-- [ ] ERD diagram
+- [x] ERD diagram
 
 ## Business problem
 
